@@ -35,6 +35,7 @@ SCENE_PLAN = [  # （場面名, 長さ[秒]）
     ("panels", 5.0),
     ("history", 4.5),
     ("branch", 5.0),
+    ("offline", 4.0),
     ("central", 4.0),
     ("p2p", 5.5),
     ("finale", 4.0),
@@ -241,6 +242,14 @@ def tower(d, cx, cy, sc, t, sulk=False, label=True):
         text_center(d, cx, cy + h + 26 * sc, "中央サーバー", 26 * sc, INK)
 
 
+def pc(d, x, y):
+    """キャラクターが後ろに座る PC。(x, y) はキャラクターの足元あたり。"""
+    d.rounded_rectangle([s(x - 50), s(y + 5), s(x + 50), s(y + 65)], radius=int(s(8)),
+                        fill=(90, 90, 120), outline=INK, width=int(s(3)))
+    d.rectangle([s(x - 42), s(y + 12), s(x + 42), s(y + 56)], fill=(200, 235, 255))
+    d.rectangle([s(x - 12), s(y + 65), s(x + 12), s(y + 78)], fill=(90, 90, 120))
+
+
 def stamp(d, cx, cy, txt, p):
     """赤いハンコ。p は押す動き（0〜1）。"""
     sc = 1.6 - 0.6 * ease_out_back(p)
@@ -427,8 +436,6 @@ def scene_branch(img, d, t):
     blob(d, pos_b[0] + together, pos_b[1] - 60 + hy, 46, CHAR_COLORS[4], t, sq, happy=merged)
     text_center(d, 360, 580, "別案をためして", 30)
     text_center(d, 920, 580, "いいとこどり", 30)
-    if t > 0.8:
-        text_center(d, 640, 660, "分散型：履歴は一人ひとりの手元に", 30, mix(BG, (120, 100, 130), clamp((t - 0.8) / 0.4)))
 
 
 def pc_nodes():
@@ -460,10 +467,7 @@ def scene_p2p(img, d, t):
     idx = int(t // hop_len)
     has_copy = set(HOPS[:min(idx + 1, len(HOPS))])
     for i, (x, y) in enumerate(nodes):
-        d.rounded_rectangle([s(x - 50), s(y + 5), s(x + 50), s(y + 65)], radius=int(s(8)),
-                            fill=(90, 90, 120), outline=INK, width=int(s(3)))
-        d.rectangle([s(x - 42), s(y + 12), s(x + 42), s(y + 56)], fill=(200, 235, 255))
-        d.rectangle([s(x - 12), s(y + 65), s(x + 12), s(y + 78)], fill=(90, 90, 120))
+        pc(d, x, y)
         got = i in has_copy
         hy, sq = hop(t + i * 0.13, 0.5, 16 if got else 6)
         blob(d, x, y - 30 + hy, 40, CHAR_COLORS[i], t, sq, happy=got)
@@ -478,9 +482,47 @@ def scene_p2p(img, d, t):
         star(d, x, y, 28, rot=t * 5)
 
 
+OFFLINE_STOP = 0.8  # サーバーが止まる時刻
+OFFLINE_ADDS = [1.2, 1.8, 2.4, 3.0]  # 止まった後に、手元の履歴が増える時刻
+
+
+def scene_offline(img, d, t):
+    text_center(d, 640, 45, "分散型：履歴は一人ひとりの手元に", 40)
+    stopped = t > OFFLINE_STOP
+    tw = (640, 215)
+    for x in (380, 900):
+        c = mix((190, 180, 195), BG, clamp((t - OFFLINE_STOP) / 0.5))
+        dashed(d, (tw[0], tw[1] + 90), (x, 420), c, 3, 16)
+    tower(d, tw[0], tw[1], 0.7, t, sulk=stopped)
+    if stopped:
+        k = ease_out_back((t - OFFLINE_STOP) / 0.3)
+        d.rounded_rectangle([s(760), s(150 - 24 * k), s(890), s(150 + 24 * k)], radius=int(s(8)),
+                            fill=(235, 235, 240), outline=INK, width=int(s(3)))
+        text_center(d, 825, 150, "停止中", 28 * max(k, 0.05))
+        for i in range(3):
+            p = ((t - OFFLINE_STOP) * 0.8 + i / 3) % 1
+            text_center(d, 700 + p * 50 + i * 12, 150 - p * 70, "Z", 18 + i * 6, mix(INK, BG, p))
+    added = sum(1 for at in OFFLINE_ADDS if t > at)
+    for i, x in enumerate((380, 900)):
+        color = CHAR_COLORS[3 + i]
+        pc(d, x, 430)
+        hy, sq = hop(t + i * 0.25, 0.5, 10)
+        blob(d, x, 400 + hy, 42, color, t, sq, happy=stopped)
+        # 手元の履歴
+        n = 2 + added
+        xs = [x - 120 + j * 60 for j in range(n)]
+        line(d, [(xs[0], 560), (xs[-1], 560)], mix(color, INK, 0.2), 8)
+        for j, nx in enumerate(xs):
+            r = 14 * (ease_out_back((t - OFFLINE_ADDS[j - 2]) / 0.3) if j >= 2 else 1)
+            ellipse(d, nx, 560, max(r, 1), max(r, 1), WHITE, INK, 4)
+    if t > 1.2:
+        text_center(d, 640, 665, "サーバーが止まっても、手元で作業を続けられる", 34,
+                    mix(BG, INK, clamp((t - 1.2) / 0.4)))
+
+
 def scene_central(img, d, t):
     stamped = t > 2.0
-    caption = "ある日とつぜん「公開停止」！" if stamped else "素材の配布は、ぜんぶ中央まかせ…"
+    caption = "ある日とつぜん「公開停止」！" if stamped else "でも、素材の配布は中央まかせ…"
     text_center(d, 640, 55, caption, 42)
     tower(d, 640, 270, 1.0, t)
     for i, color in enumerate(CHAR_COLORS):
@@ -654,11 +696,12 @@ def scene_finale(img, d, t):
 
 SCENE_FUNCS = {
     "title": scene_title,
-    "central": scene_central,
     "draw": scene_draw,
     "panels": scene_panels,
     "history": scene_history,
     "branch": scene_branch,
+    "offline": scene_offline,
+    "central": scene_central,
     "p2p": scene_p2p,
     "finale": scene_finale,
 }
@@ -763,6 +806,13 @@ def make_audio():
     # 効果音：タイトルの着地
     for i in range(5):
         add(buf, pop_sfx(), 0.8 + i * 0.25 + 0.7 * 0.36, 0.35)
+    # 効果音：サーバーの停止と、手元で履歴が増える音
+    n = int(0.5 * SR)
+    tt = np.arange(n) / SR
+    power_down = np.sin(2 * np.pi * np.cumsum(600 - 900 * tt) / SR) * np.exp(-tt * 4)
+    add(buf, power_down, START["offline"] + OFFLINE_STOP, 0.2)
+    for at in OFFLINE_ADDS:
+        add(buf, pop_sfx(), START["offline"] + at, 0.25)
     # 効果音：「公開停止」のハンコと、しょんぼり
     n = int(0.3 * SR)
     tt = np.arange(n) / SR
