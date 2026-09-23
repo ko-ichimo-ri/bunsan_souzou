@@ -33,3 +33,5 @@
 | --- | --- | --- |
 | 2026-09-24 | [初回プッシュがリモートの LICENSE により拒否された](2026-09-24-push-rejected-remote-license.md) | 解決済み |
 | 2026-09-24 | [禁止直後の `commit --amend` を含むコマンドを実行しようとした](2026-09-24-unneeded-amend-command.md) | 解決済み |
+| 2026-09-24 | [決定済みの未決事項を打消し線で残した](2026-09-24-strikethrough-for-decided-item.md) | 対応中 |
+| 2026-09-24 | [`gh pr edit` がトークンの権限不足で失敗した](2026-09-24-gh-pr-edit-missing-scope.md) | 回避策あり |
