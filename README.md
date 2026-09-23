@@ -52,6 +52,8 @@ CLIP STUDIO PAINT やメディバンペイントのように、筆圧対応ブ�
 | 文書 | 内容 |
 | --- | --- |
 | [docs/requirements.md](docs/requirements.md) | 要件定義書 |
+| [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
+| [docs/troubles/](docs/troubles/) | トラブル事例集 |
 
 ## ロードマップ
 
@@ -65,4 +67,4 @@ CLIP STUDIO PAINT やメディバンペイントのように、筆圧対応ブ�
 
 ## ライセンス
 
-未定です（要件定義書「未決事項」を参照）。オープンソースとして公開する予定です。
+[MIT License](LICENSE)
