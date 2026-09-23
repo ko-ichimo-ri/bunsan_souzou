@@ -2,7 +2,7 @@
 
 **描く。分岐する。素材と拡張機能は、誰にも消されない。**
 
-<a href="docs/media/image-video.mp4"><img src="docs/media/image-video.gif" alt="分散創造のイメージビデオ。中央サーバーに素材を公開停止されてしょんぼりした丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合し、素材を P2P で手渡しして笑顔になる" width="560"></a>
+<a href="docs/media/image-video.mp4"><img src="docs/media/image-video.gif" alt="分散創造のイメージビデオ。丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合する。中央サーバーに素材を公開停止されてしょんぼりするが、素材を P2P で手渡しして笑顔になる" width="560"></a>
 
 ▶ [音声付きのイメージビデオ（MP4）](docs/media/image-video.mp4)（生成スクリプト：[tools/image_video/](tools/image_video/make_video.py)）
 
