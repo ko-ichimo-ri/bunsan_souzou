@@ -29,9 +29,23 @@ WAV = OUT_DIR / "_audio.wav"
 W, H = 1280, 720
 SS = 2  # 描画時の拡大率（縮小してなめらかにする）
 FPS = 24
-DURATION = 25.0
+SCENE_PLAN = [  # （場面名, 長さ[秒]）
+    ("title", 4.0),
+    ("central", 4.0),
+    ("draw", 5.5),
+    ("panels", 5.0),
+    ("history", 4.5),
+    ("branch", 5.0),
+    ("p2p", 5.5),
+    ("finale", 4.0),
+]
+START = {}
+_t = 0.0
+for _name, _len in SCENE_PLAN:
+    START[_name] = _t
+    _t += _len
+DURATION = _t
 FRAMES = int(FPS * DURATION)
-SCENES = [0.0, 4.0, 10.0, 16.0, 21.0, DURATION]  # 各場面の開始時刻
 
 BG = (255, 248, 235)
 INK = (70, 55, 80)
@@ -127,12 +141,19 @@ def star_points(cx, cy, r, rot=0.0):
     return pts
 
 
-def star(d, cx, cy, r, rot=0.0):
+def star(d, cx, cy, r, rot=0.0, fill=(255, 225, 120)):
     """素材（トーン模様の星）。"""
     pts = [(s(x), s(y)) for x, y in star_points(cx, cy, r, rot)]
-    d.polygon(pts, fill=(255, 225, 120), outline=INK, width=int(s(3)))
+    d.polygon(pts, fill=fill, outline=INK, width=int(s(3)))
     for dx, dy in ((-0.2, -0.05), (0.15, 0.1), (0.0, 0.25)):
-        ellipse(d, cx + dx * r, cy + dy * r, r * 0.07, r * 0.07, (240, 170, 60))
+        ellipse(d, cx + dx * r, cy + dy * r, r * 0.07, r * 0.07, mix(fill, (200, 120, 40), 0.5))
+
+
+def dashed(d, a, b, color, width=3, steps=14):
+    for k in range(0, steps, 2):
+        p0 = (lerp(a[0], b[0], k / steps), lerp(a[1], b[1], k / steps))
+        p1 = (lerp(a[0], b[0], (k + 1) / steps), lerp(a[1], b[1], (k + 1) / steps))
+        line(d, [p0, p1], color, width)
 
 
 def sparkle(d, cx, cy, r, color=(255, 230, 120)):
@@ -142,7 +163,7 @@ def sparkle(d, cx, cy, r, color=(255, 230, 120)):
     d.polygon([(s(x), s(y)) for x, y in pts], fill=color)
 
 
-def blob(d, cx, cy, r, color, t, squash=0.0, happy=False, look=0.0):
+def blob(d, cx, cy, r, color, t, squash=0.0, happy=False, look=0.0, sad=False):
     """丸いキャラクター。squash が正なら横につぶれる。"""
     w, h = r * (1 + squash), r * (1 - squash)
     top = cy - h
@@ -164,6 +185,9 @@ def blob(d, cx, cy, r, color, t, squash=0.0, happy=False, look=0.0):
         x = cx + sx * ex + look * w * 0.08
         if happy:
             d.arc([s(x - 9), s(ey - 6), s(x + 9), s(ey + 10)], 200, 340, fill=INK, width=int(s(4)))
+        elif sad:
+            ellipse(d, x, ey + 2, w * 0.07, h * 0.09, INK)
+            line(d, [(x - sx * 10, ey - 18), (x + sx * 8, ey - 12)], INK, 3)
         else:
             ellipse(d, x, ey, w * 0.11, h * 0.16, INK)
             ellipse(d, x - w * 0.03, ey - h * 0.06, w * 0.04, h * 0.05, WHITE)
@@ -171,6 +195,8 @@ def blob(d, cx, cy, r, color, t, squash=0.0, happy=False, look=0.0):
     my = cy + h * 0.25
     if happy:
         d.chord([s(cx - 10), s(my - 8), s(cx + 10), s(my + 10)], 0, 180, fill=(200, 70, 90), outline=INK, width=int(s(2)))
+    elif sad:
+        d.arc([s(cx - 8), s(my + 2), s(cx + 8), s(my + 12)], 200, 340, fill=INK, width=int(s(3)))
     else:
         d.arc([s(cx - 8), s(my - 6), s(cx + 8), s(my + 6)], 20, 160, fill=INK, width=int(s(3)))
 
@@ -183,9 +209,51 @@ def hop(t, period=0.5, height=18.0):
     return y, squash
 
 
+GRAY = (150, 150, 168)
+
+
+def tower(d, cx, cy, sc, t, sulk=False, label=True):
+    """中央サーバー（悪役）。sulk でしょんぼり顔になる。"""
+    w, h = 90 * sc, 120 * sc
+    # アンテナと点滅する赤いランプ
+    line(d, [(cx, cy - h), (cx, cy - h - 30 * sc)], INK, max(2, 4 * sc))
+    lamp = (235, 70, 70) if int(t * 3) % 2 == 0 and not sulk else (150, 90, 90)
+    ellipse(d, cx, cy - h - 34 * sc, 9 * sc, 9 * sc, lamp, INK, 2)
+    d.rounded_rectangle([s(cx - w), s(cy - h), s(cx + w), s(cy + h)], radius=int(s(18 * sc)),
+                        fill=GRAY, outline=INK, width=int(s(max(2, 4 * sc))))
+    for k in range(3):
+        y = cy + h * 0.25 + k * h * 0.22
+        d.rounded_rectangle([s(cx - w * 0.7), s(y - h * 0.06), s(cx + w * 0.7), s(y + h * 0.06)],
+                            radius=int(s(4 * sc)), fill=(120, 120, 138))
+        ellipse(d, cx + w * 0.5, y, 4 * sc, 4 * sc, (140, 230, 140) if not sulk else (120, 140, 120))
+    # 顔
+    ey = cy - h * 0.45
+    for sx in (-1, 1):
+        x = cx + sx * w * 0.38
+        if sulk:
+            line(d, [(x - 12 * sc, ey), (x + 12 * sc, ey)], INK, max(2, 4 * sc))
+        else:
+            ellipse(d, x, ey + 4 * sc, 8 * sc, 8 * sc, INK)
+            line(d, [(x - sx * 16 * sc, ey - 16 * sc), (x + sx * 12 * sc, ey - 4 * sc)], INK, max(2, 5 * sc))
+    my = cy - h * 0.12
+    d.arc([s(cx - 20 * sc), s(my), s(cx + 20 * sc), s(my + 22 * sc)], 200, 340, fill=INK, width=int(s(max(2, 4 * sc))))
+    if label:
+        text_center(d, cx, cy + h + 26 * sc, "中央サーバー", 26 * sc, INK)
+
+
+def stamp(d, cx, cy, txt, p):
+    """赤いハンコ。p は押す動き（0〜1）。"""
+    sc = 1.6 - 0.6 * ease_out_back(p)
+    red = (220, 60, 70)
+    w, h = 130 * sc, 50 * sc
+    d.rounded_rectangle([s(cx - w), s(cy - h), s(cx + w), s(cy + h)], radius=int(s(10)),
+                        outline=red, width=int(s(6)))
+    text_center(d, cx, cy, txt, 48 * sc, red)
+
+
 # ---------------------------------------------------------------- 場面
 
-def scene_title(d, t):
+def scene_title(img, d, t):
     title_p = ease_out_back((t - 0.2) / 0.7)
     if title_p > 0:
         text_center(d, 640, 210, "分散創造", 130 * title_p)
@@ -207,7 +275,7 @@ def scene_title(d, t):
         blob(d, x, y, 60, color, t, squash, happy=p >= 1 and (t * 2 + i) % 3 < 1)
 
 
-def scene_draw(d, t):
+def scene_draw(img, d, t):
     # 左上の見出し
     text_center(d, 200, 110, "コマの中に", 40)
     text_center(d, 200, 170, "描く・消す・貼る", 40)
@@ -291,8 +359,8 @@ def history_paths():
     return main, branch
 
 
-MERGE_AT = 4.5  # 分岐の場面で、2 人が合流点に着く時刻
-BRANCH_END = 5.5
+MERGE_AT = 3.8  # 分岐の場面で、2 人が合流点に着く時刻
+BRANCH_END = 4.6
 
 
 def path_length(pts):
@@ -339,7 +407,7 @@ def draw_trail(d, pts, traveled, color):
     return pos
 
 
-def scene_branch(d, t):
+def scene_branch(img, d, t):
     merged = t > MERGE_AT
     caption = "統合！" if merged else "履歴系統を 分岐 して…"
     text_center(d, 640, 110, caption, 48)
@@ -357,8 +425,10 @@ def scene_branch(d, t):
     blob(d, pos_m[0] - together, pos_m[1] - 60 + hy, 46, CHAR_COLORS[3], t, sq, happy=merged)
     hy, sq = hop(t + 0.2, 0.45, 14)
     blob(d, pos_b[0] + together, pos_b[1] - 60 + hy, 46, CHAR_COLORS[4], t, sq, happy=merged)
-    text_center(d, 360, 610, "別案をためして", 30)
-    text_center(d, 920, 610, "いいとこどり", 30)
+    text_center(d, 360, 580, "別案をためして", 30)
+    text_center(d, 920, 580, "いいとこどり", 30)
+    if t > 0.8:
+        text_center(d, 640, 660, "分散型：履歴は一人ひとりの手元に", 30, mix(BG, (120, 100, 130), clamp((t - 0.8) / 0.4)))
 
 
 def pc_nodes():
@@ -369,16 +439,21 @@ def pc_nodes():
 HOPS = [0, 2, 4, 1, 3]
 
 
-def scene_p2p(d, t):
-    text_center(d, 640, 60, "素材は、みんなで手渡し", 44)
+def scene_p2p(img, d, t):
+    text_center(d, 640, 55, "素材は、みんなで手渡し", 44)
+    if t > 2.5:
+        text_center(d, 640, 690, "中央がいなくても、ちゃんと届く", 30, mix(BG, INK, clamp((t - 2.5) / 0.4)))
     nodes = pc_nodes()
+    # 隅でしょんぼりしていく中央サーバー
+    tw = (1150, 190)
+    fade = clamp(t / 3.0)
+    if fade < 1:
+        for n in nodes:
+            dashed(d, (tw[0], tw[1] + 60), n, mix((170, 170, 185), BG, fade), 2, 20)
+    tower(d, tw[0], tw[1], 0.45, t, sulk=t > 2.5, label=False)
     for i, a in enumerate(nodes):
         for b in nodes[i + 1:]:
-            steps = 14
-            for k in range(0, steps, 2):
-                p0 = (lerp(a[0], b[0], k / steps), lerp(a[1], b[1], k / steps))
-                p1 = (lerp(a[0], b[0], (k + 1) / steps), lerp(a[1], b[1], (k + 1) / steps))
-                line(d, [p0, p1], (200, 190, 200), 3)
+            dashed(d, a, b, (200, 190, 200))
     text_center(d, 640, 410, "ピアどうしで直接", 28, (150, 130, 150))
 
     hop_len = 0.9
@@ -403,12 +478,161 @@ def scene_p2p(d, t):
         star(d, x, y, 28, rot=t * 5)
 
 
+def scene_central(img, d, t):
+    stamped = t > 2.0
+    caption = "ある日とつぜん「公開停止」！" if stamped else "素材の配布は、ぜんぶ中央まかせ…"
+    text_center(d, 640, 55, caption, 42)
+    tower(d, 640, 270, 1.0, t)
+    for i, color in enumerate(CHAR_COLORS):
+        x = 240 + i * 200
+        if not stamped:
+            dashed(d, (640, 440), (x, 480), (190, 180, 195), 3, 16)
+            star(d, x, 505, 22, rot=t * 1.5 + i)
+        else:
+            k = clamp((t - 2.2) / 0.8)
+            if k < 0.95:
+                star(d, x, 505 + k * 50, 22 * (1 - k), fill=(190, 190, 195))
+        hy, sq = hop(t + i * 0.1, 0.6, 0 if stamped else 6)
+        blob(d, x, 615 + hy, 42, color, t, sq, sad=t > 2.3)
+    if stamped:
+        stamp(d, 930, 200, "公開停止", clamp((t - 2.0) / 0.3))
+
+
+PANEL_LAYOUT_A = [(420, 110, 860, 380), (420, 400, 860, 670)]
+PANEL_LAYOUT_B = [(420, 110, 860, 300), (560, 320, 860, 670)]
+
+
+def heart_point(u, cx, cy, sc):
+    return (cx + 16 * math.sin(u) ** 3 * sc,
+            cy - (13 * math.cos(u) - 5 * math.cos(2 * u) - 2 * math.cos(3 * u) - math.cos(4 * u)) * sc)
+
+
+def paste_clipped(img, frame, draw_content):
+    """コマの枠の範囲だけに中身を描いて貼る。draw_content(dd, cx, cy) は枠の中心を原点に描く。"""
+    x0, y0, x1, y1 = frame
+    layer = Image.new("RGB", (int(s(x1 - x0)), int(s(y1 - y0))), WHITE)
+    draw_content(ImageDraw.Draw(layer), (x1 - x0) / 2, (y1 - y0) / 2)
+    img.paste(layer, (int(s(x0)), int(s(y0))))
+
+
+def wave_points(cx, cy, sc=1.0):
+    return [(cx + (-150 + i * 5) * sc, cy + math.sin(i * 0.35) * 35 * sc) for i in range(61)]
+
+
+def scene_panels(img, d, t):
+    text_center(d, 640, 50, "コマ割りと中身は、別々に管理", 42)
+    d.rectangle([s(400), s(90), s(880), s(690)], fill=WHITE, outline=INK, width=int(s(3)))
+    k = ease_in_out((t - 0.6) / 1.6)
+    frames = [tuple(lerp(a, b, k) for a, b in zip(fa, fb)) for fa, fb in zip(PANEL_LAYOUT_A, PANEL_LAYOUT_B)]
+    heart_p = clamp((t - 0.8) / 2.2)
+    heart_n = int(60 * heart_p)
+
+    def content1(dd, cx, cy):
+        line(dd, wave_points(cx - 40, cy - 10), INK, 6)
+        if heart_n >= 2:
+            line(dd, [heart_point(2 * math.pi * i / 60, cx + 130, cy - 20, 2.5) for i in range(heart_n)],
+                 (230, 90, 130), 6)
+
+    def content2(dd, cx, cy):
+        star(dd, cx, cy - 20, 70, rot=0.2)
+        for gx in range(-120, 130, 30):
+            line(dd, [(cx + gx, cy + 110), (cx + gx + 8, cy + 90)], (110, 170, 110), 4)
+
+    paste_clipped(img, frames[0], content1)
+    paste_clipped(img, frames[1], content2)
+    for x0, y0, x1, y1 in frames:
+        d.rectangle([s(x0), s(y0), s(x1), s(y1)], outline=INK, width=int(s(5)))
+    # 2 コマ目の枠を動かす そら
+    x0, y0, x1, y1 = frames[1]
+    for hx, hy_ in ((x0, y0), (x1, y0), (x0, y1), (x1, y1)):
+        d.rectangle([s(hx - 7), s(hy_ - 7), s(hx + 7), s(hy_ + 7)], fill=(120, 190, 255), outline=INK, width=int(s(2)))
+    hy, sq = hop(t, 0.5, 8)
+    blob(d, x0 - 50, y1 - 30 + hy, 42, CHAR_COLORS[3], t, sq, happy=t > 2.4)
+    # 同時に 1 コマ目へ描き足す もも
+    f0 = frames[0]
+    fc = ((f0[0] + f0[2]) / 2, (f0[1] + f0[3]) / 2)
+    tip = heart_point(2 * math.pi * max(heart_n - 1, 0) / 60, fc[0] + 130, fc[1] - 20, 2.5)
+    hy, sq = hop(t + 0.3, 0.6, 6)
+    bx, by = tip[0] + 55, tip[1] - 45 + hy
+    line(d, [(bx - 28, by + 22), tip], (90, 90, 120), 8)
+    blob(d, bx, by, 40, CHAR_COLORS[0], t, sq, happy=t > 3.1)
+    if t > 2.3:
+        c = mix(BG, INK, clamp((t - 2.3) / 0.4))
+        text_center(d, 200, 330, "枠を動かしても", 32, c)
+        text_center(d, 200, 380, "絵はそのまま", 32, c)
+    if t > 3.1:
+        c = mix(BG, INK, clamp((t - 3.1) / 0.4))
+        text_center(d, 1090, 330, "枠と絵を", 32, c)
+        text_center(d, 1090, 380, "同時に作業できる", 32, c)
+
+
+REVERT_AT = 1.7
+
+
+def mini_panel(d, x0, y0, x1, y1, scribble=False, highlight=None, t=0.0):
+    """履歴の場面で使う、1 コマ分の絵。highlight は差分として光らせる線。"""
+    d.rectangle([s(x0), s(y0), s(x1), s(y1)], fill=WHITE, outline=INK, width=int(s(4)))
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    sc = (x1 - x0) / 400
+    line(d, wave_points(cx - 30 * sc, cy - 40 * sc, sc), INK, 6 * sc + 1)
+    star(d, cx + 110 * sc, cy + 70 * sc, 36 * sc, rot=0.3)
+    if scribble:
+        rng = random.Random(3)
+        pts = [(cx - 120 * sc + i * 12 * sc, cy + 60 * sc + rng.uniform(-40, 40) * sc) for i in range(18)]
+        line(d, pts, (220, 70, 80), 5 * sc + 1)
+    if highlight:
+        pts = [(cx - 150 * sc + i * 8 * sc, cy + 50 * sc + math.sin(i * 0.3) * 12 * sc) for i in range(20)]
+        glow = 0.5 + 0.5 * math.sin(t * 8)
+        line(d, pts, mix((255, 240, 190), (255, 210, 120), glow), 18 * sc)
+        line(d, pts, (240, 140, 40), 6 * sc)
+
+
+def scene_history(img, d, t):
+    text_center(d, 640, 50, "履歴があるから", 44)
+    reverted = t > REVERT_AT
+    # 左：履歴の並びと、戻す操作
+    xs = [170, 270, 370] + ([470] if reverted else [])
+    line(d, [(xs[0], 130), (xs[-1], 130)], (150, 140, 160), 6)
+    for i, x in enumerate(xs):
+        fill = (255, 200, 205) if i == 2 else WHITE
+        ellipse(d, x, 130, 20, 20, fill, INK, 4)
+        text_center(d, x, 130, "戻" if i == 3 else str(i + 1), 20)
+    mini_panel(d, 120, 180, 520, 540, scribble=not reverted)
+    if REVERT_AT < t < REVERT_AT + 0.5:
+        k = (t - REVERT_AT) / 0.5
+        for i in range(8):
+            a = i * math.pi / 4
+            sparkle(d, 320 + math.cos(a) * (120 + k * 120), 360 + math.sin(a) * (100 + k * 100), 14)
+    pressed = REVERT_AT - 0.3 < t < REVERT_AT + 0.1
+    by = 280 + (4 if pressed else 0)
+    d.rounded_rectangle([s(560), s(by - 24), s(680), s(by + 24)], radius=int(s(12)),
+                        fill=(255, 225, 150) if pressed else (255, 240, 200), outline=INK, width=int(s(3)))
+    text_center(d, 620, by, "戻す", 26)
+    hy, sq = hop(t, 0.55, 8)
+    blob(d, 620, 400 + hy, 44, CHAR_COLORS[2], t, sq, happy=reverted, sad=not reverted)
+    if reverted:
+        text_center(d, 320, 600, "失敗しても戻せる", 32, mix(BG, INK, clamp((t - REVERT_AT) / 0.4)))
+    # 右：前後を比べて差分を見る
+    if t > 2.2:
+        k = ease_out_back((t - 2.2) / 0.5)
+        off = (1 - k) * 40
+        text_center(d, 830, 170 + off, "前", 26)
+        text_center(d, 1090, 170 + off, "後", 26)
+        mini_panel(d, 730, 195 + off, 930, 375 + off)
+        mini_panel(d, 990, 195 + off, 1190, 375 + off, highlight=True, t=t)
+        text_center(d, 1090, 405 + off, "差分", 26, (230, 130, 40))
+        hy, sq = hop(t + 0.2, 0.5, 10)
+        blob(d, 960, 500 + hy, 44, CHAR_COLORS[1], t, sq, happy=True)
+        if t > 2.8:
+            text_center(d, 960, 600, "差分がひと目でわかる", 32, mix(BG, INK, clamp((t - 2.8) / 0.4)))
+
+
 CONFETTI = [(random.Random(i).uniform(0, W), random.Random(i + 99).uniform(-H, 0),
              random.Random(i + 7).uniform(60, 160), random.Random(i + 3).choice(CHAR_COLORS))
             for i in range(90)]
 
 
-def scene_finale(d, t):
+def scene_finale(img, d, t):
     for x0, y0, speed, color in CONFETTI:
         y = (y0 + t * speed * 2.2) % (H + 40) - 20
         x = x0 + math.sin(t * 3 + x0) * 20
@@ -428,21 +652,30 @@ def scene_finale(d, t):
         blob(d, x, 560 + hy, 58, color, t, sq, happy=True, look=math.sin(t * 3 + i))
 
 
-SCENE_FUNCS = [scene_title, scene_draw, scene_branch, scene_p2p, scene_finale]
+SCENE_FUNCS = {
+    "title": scene_title,
+    "central": scene_central,
+    "draw": scene_draw,
+    "panels": scene_panels,
+    "history": scene_history,
+    "branch": scene_branch,
+    "p2p": scene_p2p,
+    "finale": scene_finale,
+}
 
 
 def render_frame(n):
     t = n / FPS
-    k = max(i for i, start in enumerate(SCENES[:-1]) if t >= start)
-    lt = t - SCENES[k]
+    name, length = next((nm, ln) for nm, ln in reversed(SCENE_PLAN) if t >= START[nm])
+    lt = t - START[name]
     img = Image.new("RGB", (W * SS, H * SS), BG)
     d = ImageDraw.Draw(img)
-    SCENE_FUNCS[k](d, lt)
+    SCENE_FUNCS[name](img, d, lt)
     img = img.resize((W, H), Image.LANCZOS)
     # 場面の切り替わりで背景色にフェード
-    edge = min(t - SCENES[k], SCENES[k + 1] - t)
+    edge = min(lt, length - lt)
     fade = 1 - clamp(edge / 0.2)
-    if k == 0 and t < 0.2:
+    if name == "title" and lt < 0.2:
         fade = 0.0
     if fade > 0:
         img = Image.blend(img, Image.new("RGB", (W, H), BG), fade)
@@ -497,12 +730,15 @@ def make_audio():
     total = int(DURATION * SR)
     buf = np.zeros(total)
     chords = [(60, 64, 67), (55, 59, 62), (57, 60, 64), (53, 57, 60)]  # C G Am F
+    gloomy = [(57, 60, 64), (52, 56, 59)]  # Am E（中央集権の場面）
+    central = (START["central"], START["central"] + dict(SCENE_PLAN)["central"])
     rng = random.Random(42)
     bar = 4 * BEAT
     motif = [1, 0, 1, 1, 0, 1, 1, 1]  # 8 分音符ごとの発音
     for b in range(int(DURATION / bar) + 1):
         start = b * bar
-        chord = chords[b % 4]
+        dark = central[0] <= start < central[1]
+        chord = gloomy[b % 2] if dark else chords[b % 4]
         # ベース
         for k in range(4):
             add(buf, triangle(midi_hz(chord[0] - 12), BEAT * 0.9), start + k * BEAT, 0.28)
@@ -521,18 +757,32 @@ def make_audio():
         if start >= 0.5:
             scale = [c + 12 for c in chord] + [chord[0] + 24, chord[0] + 14]
             for k, on in enumerate(motif):
-                if on and rng.random() < 0.9:
-                    note = rng.choice(scale)
+                if on and rng.random() < (0.45 if dark else 0.9):
+                    note = rng.choice(scale) - (12 if dark else 0)
                     add(buf, square(midi_hz(note), BEAT / 2 * 0.85), start + k * BEAT / 2, 0.12)
     # 効果音：タイトルの着地
     for i in range(5):
         add(buf, pop_sfx(), 0.8 + i * 0.25 + 0.7 * 0.36, 0.35)
+    # 効果音：「公開停止」のハンコと、しょんぼり
+    n = int(0.3 * SR)
+    tt = np.arange(n) / SR
+    add(buf, np.sin(2 * np.pi * 70 * tt) * np.exp(-tt * 12), START["central"] + 2.0, 0.6)
+    for k, note in enumerate([72, 69, 65, 60]):
+        add(buf, triangle(midi_hz(note), 0.22), START["central"] + 2.3 + k * 0.22, 0.25)
+    # 効果音：「戻す」の巻き戻し
+    n = int(0.35 * SR)
+    tt = np.arange(n) / SR
+    sweep = np.sin(2 * np.pi * np.cumsum(1400 - 3000 * tt) / SR) * np.exp(-tt * 5)
+    add(buf, sweep, START["history"] + REVERT_AT - 0.2, 0.2)
+    # 効果音：差分が光る
+    for k, note in enumerate([88, 93]):
+        add(buf, square(midi_hz(note), 0.15, 0.5), START["history"] + 2.4 + k * 0.1, 0.1)
     # 効果音：統合のキラキラ
     for k, note in enumerate([84, 88, 91, 96, 100]):
-        add(buf, square(midi_hz(note), 0.12, 0.5), SCENES[2] + MERGE_AT + k * 0.06, 0.12)
+        add(buf, square(midi_hz(note), 0.12, 0.5), START["branch"] + MERGE_AT + k * 0.06, 0.12)
     # 効果音：素材の受け渡し
     for k in range(len(HOPS) - 1):
-        add(buf, pop_sfx(), SCENES[3] + (k + 1) * 0.9, 0.3)
+        add(buf, pop_sfx(), START["p2p"] + (k + 1) * 0.9, 0.3)
     # 締めの和音
     for note in (72, 76, 79, 84):
         add(buf, square(midi_hz(note), 1.6, 0.5) * np.linspace(1, 0, int(1.6 * SR)), DURATION - 2.2, 0.08)
