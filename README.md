@@ -72,13 +72,15 @@ Git に慣れていない人にも伝わるよう、Git の用語ではなく次
 | 文書 | 内容 |
 | --- | --- |
 | [docs/requirements.md](docs/requirements.md) | 要件定義書 |
+| [docs/decisions/](docs/decisions/) | 設計判断の記録（技術選定など） |
+| [docs/guides/rust.md](docs/guides/rust.md) | Rust 技術ガイド |
 | [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
 | [docs/troubles/](docs/troubles/) | トラブル事例集 |
 
 ## ロードマップ
 
 - [x] 要件定義（初版）
-- [ ] 技術選定（言語・GUI・P2P 基盤）
+- [x] 技術選定（言語・GUI・P2P 基盤）
 - [ ] 保存形式・リポジトリ形式の設計
 - [ ] 描画エンジンの試作
 - [ ] ローカルでのバージョン管理（履歴更新・分岐・差分表示）
