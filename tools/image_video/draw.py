@@ -229,7 +229,7 @@ def blob(d, cx, cy, r, color, t, squash=0.0, happy=False, look=0.0, sad=False, g
     ellipse(d, cx, cy, w, h, color, INK, 3)
     ellipse(d, cx - w * 0.35, cy - h * 0.45, w * 0.22, h * 0.14, mix(color, WHITE, 0.6))
     # ほっぺ
-    blush = mix(color, (255, 110, 140), 0.55)
+    blush = mix(color, (255, 120, 150), 0.72)
     ellipse(d, cx - w * 0.55, cy + h * 0.18, w * 0.16, h * 0.1, blush)
     ellipse(d, cx + w * 0.55, cy + h * 0.18, w * 0.16, h * 0.1, blush)
     # 目
