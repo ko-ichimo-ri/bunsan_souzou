@@ -522,7 +522,7 @@ def scene_offline(img, d, t):
 
 def scene_central(img, d, t):
     stamped = t > 2.0
-    caption = "ある日とつぜん「公開停止」！" if stamped else "でも、素材の配布は中央まかせ…"
+    caption = "ある日とつぜん「公開停止」！" if stamped else "もし素材の配布が中央まかせだと…"
     text_center(d, 640, 55, caption, 42)
     tower(d, 640, 270, 1.0, t)
     for i, color in enumerate(CHAR_COLORS):
