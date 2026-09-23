@@ -383,7 +383,8 @@ def make_audio(path):
     fade_in, fade_out = samples(0.05), samples(1.2)
     out[:fade_in] *= np.linspace(0, 1, fade_in)[:, None]
     out[-fade_out:] *= np.linspace(1, 0, fade_out)[:, None]
-    out = np.tanh(out / np.max(np.abs(out)) * 1.6) / np.tanh(1.6) * 0.9  # やわらかく音割れを防ぐ
+    # やわらかく音割れを防ぐ。AAC に圧縮すると波形が少し膨らむので、上限に余裕を残す
+    out = np.tanh(out / np.max(np.abs(out)) * 1.6) / np.tanh(1.6) * 0.8
     pcm = (out * 32767).astype(np.int16)
     with wave.open(str(path), "wb") as w:
         w.setnchannels(2)
