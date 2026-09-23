@@ -66,11 +66,6 @@ def ease_in_out(t):
     return t * t * (3 - 2 * t)
 
 
-def fade_in(t, dur=0.4, color=INK):
-    """t 秒かけて背景色から color に変わる色。"""
-    return mix(BG, color, clamp(t / dur))
-
-
 def s(v):
     """論理座標を描画座標に変換する。"""
     return v * SS
