@@ -95,7 +95,7 @@ def s(v):
 def font(size):
     for path in FONT_PATHS:
         if Path(path).exists():
-            return ImageFont.truetype(path, int(size * SS))
+            return ImageFont.truetype(path, max(1, int(size * SS)))
     return ImageFont.load_default()
 
 
