@@ -31,11 +31,11 @@ SS = 2  # 描画時の拡大率（縮小してなめらかにする）
 FPS = 24
 SCENE_PLAN = [  # （場面名, 長さ[秒]）
     ("title", 4.0),
-    ("central", 4.0),
     ("draw", 5.5),
     ("panels", 5.0),
     ("history", 4.5),
     ("branch", 5.0),
+    ("central", 4.0),
     ("p2p", 5.5),
     ("finale", 4.0),
 ]
