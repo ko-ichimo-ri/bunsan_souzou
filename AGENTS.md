@@ -1,7 +1,7 @@
 # AGENTS.md
 
 このリポジトリで作業するすべての参加者（人間・AI エージェント）向けのガイドラインです。
-プロジェクトの概要は [README.md](README.md)、仕様は [docs/requirements.md](docs/requirements.md) を参照してください。
+プロジェクトの概要は [README.md](README.md)、最終的に目指す姿は [docs/vision.md](docs/vision.md) を参照してください。
 
 ## 基本姿勢：人間と AI は対等な仲間
 
