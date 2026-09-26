@@ -2,9 +2,9 @@
 
 **描く。分岐する。素材と拡張機能は、誰にも消されない。**
 
-<a href="docs/media/image-video.mp4"><img src="docs/media/image-video.gif" alt="分散創造のイメージビデオ。丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合する。サーバーが止まっても手元で作業を続けられる。もし素材の配布が中央まかせだと公開停止されてしょんぼり。でも分散創造では素材を P2P で手渡しできて笑顔になる" width="560"></a>
+<a href="media/image-video.mp4"><img src="media/image-video.gif" alt="分散創造のイメージビデオ。丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合する。サーバーが止まっても手元で作業を続けられる。もし素材の配布が中央まかせだと公開停止されてしょんぼり。でも分散創造では素材を P2P で手渡しできて笑顔になる" width="560"></a>
 
-▶ [音声付きのイメージビデオ（MP4）](docs/media/image-video.mp4)（生成スクリプト：[tools/image_video/](tools/image_video/make_video.py)）
+▶ [音声付きのイメージビデオ（MP4）](media/image-video.mp4)（生成スクリプト：[tools/image_video/](tools/image_video/make_video.py)）
 
 「分散創造」は、Git のような分散バージョン管理と、素材・拡張機能の P2P 配布を組み込んだ、イラスト・漫画制作ツールです。
 
