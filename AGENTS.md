@@ -53,6 +53,7 @@
 | --- | --- |
 | [docs/vision.md](docs/vision.md) | 構想。最終的に目指す姿 |
 | [docs/ideas/](docs/ideas/) | アイデア。1 件 1 ファイル |
+| [docs/research/](docs/research/) | 調査レポート。一次資料を原文で照合して引用する |
 | `docs/requirements.md` | 今作っている版の要件定義 |
 | `docs/spec.md` | 今作っている版の仕様（利用者から見た動き） |
 | `docs/design.md` | 今作っている版の設計（内部構造・データ形式） |
