@@ -75,6 +75,7 @@ Git に慣れていない人にも伝わるよう、Git の用語ではなく次
 
 | 文書 | 内容 |
 | --- | --- |
+| [docs/concept.md](docs/concept.md) | 理念（なぜ作るか） |
 | [docs/vision.md](docs/vision.md) | 構想（最終的に目指す姿） |
 | [docs/ideas/](docs/ideas/) | アイデア集 |
 | [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
