@@ -2,6 +2,10 @@
 
 **描く。分岐する。素材と拡張機能は、誰にも消されない。**
 
+<a href="docs/media/image-video.mp4"><img src="docs/media/image-video.gif" alt="分散創造のイメージビデオ。丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合する。サーバーが止まっても手元で作業を続けられる。もし素材の配布が中央まかせだと公開停止されてしょんぼり。でも分散創造では素材を P2P で手渡しできて笑顔になる" width="560"></a>
+
+▶ [音声付きのイメージビデオ（MP4）](docs/media/image-video.mp4)（生成スクリプト：[tools/image_video/](tools/image_video/make_video.py)）
+
 「分散創造」は、Git のような分散バージョン管理と、素材・拡張機能の P2P 配布を組み込んだ、イラスト・漫画制作ツールです。
 
 > [!NOTE]
@@ -72,7 +76,7 @@ Git に慣れていない人にも伝わるよう、Git の用語ではなく次
 | 文書 | 内容 |
 | --- | --- |
 | [docs/vision.md](docs/vision.md) | 構想（最終的に目指す姿） |
-| [docs/requirements.md](docs/requirements.md) | 要件定義書（v0.1.0 試作品） |
+| [docs/requirements/](docs/requirements/) | 要件定義書（v0.1.0 試作品） |
 | [docs/spec.md](docs/spec.md) | 仕様書（v0.1.0 試作品） |
 | [docs/ideas/](docs/ideas/) | アイデア集 |
 | [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
