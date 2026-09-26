@@ -1,10 +1,10 @@
 # 分散創造（Bunsan Souzou）
 
-**描く。分岐する。素材と拡張機能は、誰にも消されない。**
+**個人と自由と共同と　～大きな力に負けない創造～**
 
-<a href="docs/media/image-video.mp4"><img src="docs/media/image-video.gif" alt="分散創造のイメージビデオ。丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合する。サーバーが止まっても手元で作業を続けられる。もし素材の配布が中央まかせだと公開停止されてしょんぼり。でも分散創造では素材を P2P で手渡しできて笑顔になる" width="560"></a>
+<a href="media/image-video.mp4"><img src="media/image-video.gif" alt="分散創造のイメージビデオ。丸いキャラクターたちが、コマに線を描き、コマ割りと中身を別々に動かし、履歴で失敗を戻して差分を比べ、履歴を分岐・統合する。サーバーが止まっても手元で作業を続けられる。もし素材の配布が中央まかせだと公開停止されてしょんぼり。でも分散創造では素材を P2P で手渡しできて笑顔になる" width="560"></a>
 
-▶ [音声付きのイメージビデオ（MP4）](docs/media/image-video.mp4)（生成スクリプト：[tools/image_video/](tools/image_video/make_video.py)）
+▶ [音声付きのイメージビデオ（MP4）](media/image-video.mp4)（生成スクリプト：[tools/image_video/](tools/image_video/make_video.py)）
 
 「分散創造」は、Git のような分散バージョン管理と、素材・拡張機能の P2P 配布を組み込んだ、イラスト・漫画制作ツールです。
 
@@ -77,6 +77,7 @@ Git に慣れていない人にも伝わるよう、Git の用語ではなく次
 | --- | --- |
 | [docs/vision.md](docs/vision.md) | 構想（最終的に目指す姿） |
 | [docs/ideas/](docs/ideas/) | アイデア集 |
+| [docs/research/](docs/research/) | 調査レポート（先行事例） |
 | [docs/decisions/](docs/decisions/) | 設計判断の記録（技術選定など） |
 | [docs/guides/rust.md](docs/guides/rust.md) | Rust 技術ガイド |
 | [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
