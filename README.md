@@ -82,13 +82,15 @@ Git に慣れていない人にも伝わるよう、Git の用語ではなく次
 | [docs/vision.md](docs/vision.md) | 構想（最終的に目指す姿） |
 | [docs/ideas/](docs/ideas/) | アイデア集 |
 | [docs/research/](docs/research/) | 調査レポート（先行事例） |
+| [docs/decisions/](docs/decisions/) | 設計判断の記録（技術選定など） |
+| [docs/guides/rust.md](docs/guides/rust.md) | Rust 技術ガイド |
 | [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
 | [docs/troubles/](docs/troubles/) | トラブル事例集 |
 
 ## ロードマップ
 
 - [x] 要件定義（初版）
-- [ ] 技術選定（言語・GUI・P2P 基盤）
+- [x] 技術選定（言語・GUI・P2P 基盤）
 - [ ] 保存形式・リポジトリ形式の設計
 - [ ] 描画エンジンの試作
 - [ ] ローカルでのバージョン管理（履歴更新・分岐・差分表示）
