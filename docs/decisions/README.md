@@ -37,3 +37,4 @@
 | 0004 | [保存形式に JSON を使う](0004-data-format-json.md) | 採用 |
 | 0005 | [分散バージョン管理は git コマンドを呼び出して実現する](0005-vcs-git-cli.md) | 採用 |
 | 0006 | [P2P 配布に Iroh を使う](0006-p2p-iroh.md) | 採用 |
+| 0007 | [拡張機能は配布せず、公開 API だけを用意する](0007-extensions-interface-only.md) | 採用 |
