@@ -77,6 +77,7 @@ Git に慣れていない人にも伝わるよう、Git の用語ではなく次
 | --- | --- |
 | [docs/vision.md](docs/vision.md) | 構想（最終的に目指す姿） |
 | [docs/requirements/](docs/requirements/) | 要件定義書（v0.1.0 試作品） |
+| [docs/spec/](docs/spec/) | 仕様書（v0.1.0 試作品） |
 | [docs/ideas/](docs/ideas/) | アイデア集 |
 | [AGENTS.md](AGENTS.md) | 開発に参加する人間・AI 向けの作業ルール |
 | [docs/troubles/](docs/troubles/) | トラブル事例集 |
