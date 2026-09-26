@@ -11,7 +11,7 @@ from PIL import Image, ImageChops, ImageDraw
 
 from draw import (BG, BOUNCE_FIRST_CONTACT, CHAR_COLORS, H, INK, W, WHITE, background, blob, burst, clamp,
                   dashed, dust, ease_in_out, ease_out_back, ease_out_bounce, ellipse, hop, lerp, line, logo,
-                  mix, pc, s, stamp, star, star_with_trail, text_center, text_pop, tower)
+                  mix, pc, s, stamp, star, star_points, star_with_trail, text_center, text_pop, tower)
 from timeline import LENGTH, SCENE_INDEX, SCENE_PLAN, scene_at
 
 # ---------------------------------------------------------------- 1. タイトル
@@ -184,6 +184,55 @@ def scene_panels(img, d, t):
     text_pop(d, 200, 380, "絵はそのまま", 32, t - 2.5)
     text_pop(d, 1090, 330, "枠と絵を", 32, t - 3.1)
     text_pop(d, 1090, 380, "同時に作業できる", 32, t - 3.3)
+
+
+# ---------------------------------------------------------------- 3.5 コマ同士も別々に
+
+EACH_PANEL_FRAMES = [(420, 110, 860, 300), (420, 320, 630, 670), (650, 320, 860, 670)]
+EACH_PANEL_DRAW = (0.3, 2.8)                # 3 人が同時に描いている時間
+EACH_PANEL_SAVES = [1.1, 1.9, 2.8]          # 各コマで履歴が 1 つ増える時刻
+EACH_PANEL_DONE = 3.0
+
+
+def each_panel_strokes(i):
+    """i 番目のコマに描く絵の点列と色（ページ座標）。"""
+    x0, y0, x1, y1 = EACH_PANEL_FRAMES[i]
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    if i == 0:
+        return [(cx - 170 + i * 6, cy + math.sin(i * 0.3) * 40) for i in range(58)], INK
+    if i == 1:
+        return [(cx + math.cos(a) * (8 + a * 9), cy + math.sin(a) * (8 + a * 9)) for a in
+                [k * 0.2 for k in range(50)]], (60, 150, 130)
+    pts = star_points(cx, cy, 80, 0.0)
+    return pts + [pts[0]], (220, 150, 40)
+
+
+def scene_each_panel(img, d, t):
+    text_pop(d, 640, 50, "コマ同士も、別々に作業できる", 42, t - 0.1)
+    d.rectangle([s(400), s(90), s(880), s(690)], fill=WHITE, outline=INK, width=int(s(3)))
+    p = clamp((t - EACH_PANEL_DRAW[0]) / (EACH_PANEL_DRAW[1] - EACH_PANEL_DRAW[0]))
+    offsets = [(60, -55), (-60, 40), (60, 40)]
+    for i, frame in enumerate(EACH_PANEL_FRAMES):
+        x0, y0, x1, y1 = frame
+        d.rectangle([s(x0), s(y0), s(x1), s(y1)], outline=INK, width=int(s(5)))
+        pts, color = each_panel_strokes(i)
+        n = max(int(len(pts) * p), 1)
+        if n >= 2:
+            line(d, pts[:n], color, 6)
+        # このコマだけの履歴
+        saved = sum(1 for at in EACH_PANEL_SAVES if t > at + i * 0.1)
+        for j in range(1 + saved):
+            ellipse(d, x0 + 22 + j * 22, y0 + 22, 7, 7, CHAR_COLORS[i] if j else WHITE, INK, 2)
+        burst(d, (x0 + x1) / 2, (y0 + y1) / 2, t - EACH_PANEL_DONE - i * 0.12, 0.5, count=8, reach=80)
+        tip = pts[n - 1]
+        ox, oy = offsets[i]
+        hy, sq = hop(t + i * 0.2, 0.5, 6)
+        bx, by = tip[0] + ox, tip[1] + oy + hy
+        line(d, [(bx - 0.5 * ox, by - 0.45 * oy), tip], (90, 90, 120), 7)
+        blob(d, bx, by, 36, CHAR_COLORS[i], t, sq, happy=t > EACH_PANEL_DONE, look=-ox / 100)
+    text_pop(d, 200, 330, "コマごとに", 32, t - 1.6)
+    text_pop(d, 200, 380, "履歴を持つから", 32, t - 1.8)
+    text_pop(d, 1090, 355, "3 人で同時に描ける", 32, t - 2.4)
 
 
 # ---------------------------------------------------------------- 4. 履歴の良さ
@@ -473,6 +522,7 @@ SCENE_FUNCS = {
     "title": scene_title,
     "draw": scene_draw,
     "panels": scene_panels,
+    "each_panel": scene_each_panel,
     "history": scene_history,
     "branch": scene_branch,
     "offline": scene_offline,
