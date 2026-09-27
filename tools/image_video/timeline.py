@@ -7,6 +7,7 @@ SCENE_PLAN = [  # （場面名, 長さ[秒]）
     ("title", 4.0),
     ("draw", 6.0),
     ("panels", 6.0),
+    ("each_panel", 4.0),
     ("history", 6.0),
     ("branch", 6.0),
     ("offline", 4.0),

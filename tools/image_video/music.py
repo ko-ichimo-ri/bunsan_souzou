@@ -20,6 +20,7 @@ SECTION = {
     "title": "intro",
     "draw": "groove",
     "panels": "groove",
+    "each_panel": "groove",
     "history": "groove",
     "branch": "groove",
     "offline": "calm",
