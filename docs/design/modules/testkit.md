@@ -25,7 +25,7 @@
 | `SequentialIdSource` | `IdSource` | `00000000-…-000000000001` から順に ID を返す | ― |
 | `TestKit` | ― | 上の偽物をまとめて作り、それらを使う `Workspace` を返す | 作品フォルダごとの `MemoryFiles` を取り出せる（`files(dir)`） |
 
-`WorkRepository` には偽物を作らず、本物の `store_json::JsonWorkRepository` を `MemoryFiles` と組み合わせて使います。保存形式は速く、決まった結果で動くためです。
+`WorkRepository` には偽物を作らず、本物の `store_json::JsonWorkRepository` を `MemoryFiles` と組み合わせて使います。保存形式は速く、決まった結果で動くためです。そのため app は、testkit と store-json を開発時だけの依存（`dev-dependencies`）に持ちます。本番のビルドには含まれないので、[依存の規則](../architecture.md#3-依存の規則)は保たれます。
 
 ## 3. 使い方の例
 
