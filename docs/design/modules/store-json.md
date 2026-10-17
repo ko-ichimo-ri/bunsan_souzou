@@ -63,7 +63,30 @@ fn content_from_domain(content: &PanelContent) -> PanelFileV1;
 | `panels/<コマ ID>.json` | コマ内容（1 コマ 1 ファイル） | `PanelFileV1` |
 | `assets/<ハッシュ値>.png` | 貼った素材（app が置く。場所だけ `asset_path` で教える） | ― |
 
-貼った素材には、画像の画素数（`width`・`height`）も保存します。画像を開かずに当たり判定と拡大縮小ができるようにするためです。
+**work.json**（`format_version` は保存形式の版。形式を変えたときに上げる）
+
+```json
+{
+  "format_version": 1,
+  "page": { "width": 1820.0, "height": 2570.0 }
+}
+```
+
+**layout.json**（`panels` の並びが読み順。`frame` は枠の位置と大きさ、`view` は表示範囲）
+
+```json
+{
+  "panels": [
+    {
+      "id": "3f2b8c1e-0d7a-4e5b-9c61-2a8f4d7e9b10",
+      "frame": { "x": 100.0, "y": 100.0, "width": 800.0, "height": 600.0 },
+      "view": { "offset_x": 0.0, "offset_y": 0.0, "scale": 1.0 }
+    }
+  ]
+}
+```
+
+**panels/<コマ ID>.json**（素材が下、線が上の順に描く。貼った素材には画像の画素数 `width`・`height` も保存し、画像を開かずに当たり判定と拡大縮小ができるようにする）
 
 ```json
 {

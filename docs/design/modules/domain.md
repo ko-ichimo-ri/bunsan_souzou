@@ -29,7 +29,7 @@ pub struct Rect { pub origin: Point, pub size: Size }
 /// 長方形の四隅。
 pub enum Corner { TopLeft, TopRight, BottomLeft, BottomRight }
 
-/// コマ ID（UUID v4）。作り方は app が決める。
+/// コマ ID（UUID v4）。別々の履歴系統で同時にコマを作っても重ならないよう、ランダムな ID にする。作り方は app が決める。
 pub struct PanelId(uuid::Uuid);
 
 /// 素材のハッシュ値（BLAKE3 を 16 進数 64 文字で表したもの）。
