@@ -77,7 +77,7 @@ crates/
 | exchange-iroh | [modules/exchange-iroh.md](modules/exchange-iroh.md) | iroh、iroh-blobs、tokio |
 | ui-egui | [modules/ui-egui.md](modules/ui-egui.md) | eframe（egui）、image、rfd |
 | testkit | [modules/testkit.md](modules/testkit.md) | （なし） |
-| bunsan-souzou | 本文書の 5 節 | anyhow |
+| bunsan-souzou | 本文書の 5 節 | anyhow、uuid（ランダムなコマ ID） |
 
 ## 3. 依存の規則
 
