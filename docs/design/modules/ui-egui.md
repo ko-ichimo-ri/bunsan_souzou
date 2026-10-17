@@ -135,8 +135,8 @@ stateDiagram-v2
     Idle --> Resizing: Down（選択中のコマの角）
     Idle --> Moving: Down（コマの中）/ そのコマを選択
     Idle --> Creating: Down（コマのない場所）/ 選択を外す
-    Resizing --> Resizing: Move / ResizePanel{corner, to}
-    Moving --> Moving: Move / MovePanel{delta = at − last}
+    Resizing --> Resizing: Move / ResizePanel（corner, to）
+    Moving --> Moving: Move / MovePanel（delta = at − last）
     Creating --> Creating: Move（ドラッグ中の枠を表示）
     Resizing --> Idle: Up
     Moving --> Idle: Up

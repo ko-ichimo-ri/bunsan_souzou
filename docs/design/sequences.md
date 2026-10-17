@@ -192,7 +192,7 @@ sequenceDiagram
     Vcs-->>Session: RevisionFiles（FileSource）
     Session->>Repo: load(revision_files)
     Repo->>Rev: read(work.json / layout.json / panels/*.json)
-    Rev->>Rev: git show <rev>:<path>
+    Rev->>Rev: git show 〈rev〉:〈path〉
     Repo-->>Session: その時点の Work
     Session->>Session: mode = Viewing{revision, work}
     UI->>UI: 「過去の状態を表示中」と表示し、編集を止める
@@ -346,13 +346,13 @@ sequenceDiagram
     User->>UI: Ctrl+S
     UI->>Session: save()
     Session->>Repo: asset_path(hash)
-    Session->>Files: read(assets/<hash>.png)
+    Session->>Files: read(assets/〈hash〉.png)
     alt まだ作品フォルダにない
         Session->>Lib: read(hash)
-        Session->>Files: write(assets/<hash>.png)
+        Session->>Files: write(assets/〈hash〉.png)
     end
     Session->>Repo: save(files, work, dirty)
-    Repo->>Files: write(panels/<id>.json)
+    Repo->>Files: write(panels/〈id〉.json)
     Note over Session,Files: 素材を先に置いてから、コマ内容を書く
 ```
 
