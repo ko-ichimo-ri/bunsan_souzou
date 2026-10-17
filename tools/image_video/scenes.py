@@ -450,8 +450,8 @@ def scene_finale(img, d, t):
                for k in (0, math.pi / 2, math.pi, 3 * math.pi / 2)]
         d.polygon([(s(px), s(py)) for px, py in pts], fill=color)
     logo(d, 640, 170, 120, t - 0.1)
-    text_pop(d, 640, 290, "描く。分岐する。", 44, t - 0.8)
-    text_pop(d, 640, 350, "素材と拡張機能は、誰にも消されない。", 36, t - 1.4, stagger=0.02)
+    text_pop(d, 640, 290, "個人と自由と共同と", 48, t - 0.8, stagger=0.06)
+    text_pop(d, 640, 355, "～大きな力に負けない創造～", 34, t - 1.5, stagger=0.03)
     rng = random.Random(5)
     for i, color in enumerate(CHAR_COLORS):
         period = rng.uniform(0.35, 0.55)

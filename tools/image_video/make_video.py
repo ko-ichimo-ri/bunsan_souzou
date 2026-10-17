@@ -5,8 +5,8 @@
     python tools/image_video/make_video.py
 
 出力:
-    docs/media/image-video.mp4  … 音声付き（1280x720）
-    docs/media/image-video.gif  … README 表示用（音声なし・縮小）
+    media/image-video.mp4  … 音声付き（1280x720）
+    media/image-video.gif  … README 表示用（音声なし・縮小）
 
 ファイルの役割:
     timeline.py … 場面の時間割（映像と音楽が共有する）
@@ -26,7 +26,7 @@ from scenes import render_frame
 from timeline import DURATION, FPS, FRAMES
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "docs" / "media"
+OUT_DIR = ROOT / "media"
 MP4 = OUT_DIR / "image-video.mp4"
 GIF = OUT_DIR / "image-video.gif"
 WAV = OUT_DIR / "_audio.wav"
