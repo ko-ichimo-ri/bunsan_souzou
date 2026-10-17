@@ -130,6 +130,7 @@ pub enum AppError {
 | `is_dirty(&self) -> bool` | 保存していない変更があるか | 仕様書 2.3 |
 | `edit(&mut self, cmd: EditCommand) -> Result<(), AppError>` | 編集する（[A9](#a9-編集と変更の記録)） | R-001〜R-021 |
 | `save(&mut self) -> Result<(), AppError>` | 変わったファイルだけを保存する（[A10](#a10-保存)） | R-014・R-022・R-051 |
+| `asset_bytes(&self, hash: &AssetHash) -> Result<Vec<u8>, AppError>` | 素材のバイト列を、作品フォルダ → 素材置き場の順に探して返す（画面の表示用。初回ダウンロードした作品の素材は作品フォルダにだけある） | R-022 |
 
 ### 3.3 Session：履歴
 
