@@ -91,7 +91,7 @@ pub struct PlacedAsset {
 
 ### 2.3 変更の記録
 
-編集操作は、どのファイルに書き戻す必要があるかを `Changes` として返します。app はこれを集めて、保存のときに変わったファイルだけを書きます（[store-json 3.2](store-json.md#32-変わったファイルだけを書く)）。
+編集操作は、どのファイルに書き戻す必要があるかを `Changes` として返します。app はこれを集めて、保存のときに変わったファイルだけを書きます（[store-json A16](store-json.md#a16-変わったファイルだけを書く)）。
 
 ```rust
 pub enum Touched {
@@ -241,7 +241,7 @@ extend_stroke(panel, index, q):
 quantize(p) = (round(p.x ÷ COORD_QUANTUM) × COORD_QUANTUM, 同様に y)
 ```
 
-座標を 0.01 単位に丸めるのは、保存した JSON の数値が実行ごとに揺れず、同じ線からは同じ文字列ができるようにするためです（[store-json A10](store-json.md#a10-決まった形で書き出す)）。
+座標を 0.01 単位に丸めるのは、保存した JSON の数値が実行ごとに揺れず、同じ線からは同じ文字列ができるようにするためです（[store-json A15](store-json.md#a15-決まった形で書き出す)）。
 
 ### A4. 消しゴム
 
