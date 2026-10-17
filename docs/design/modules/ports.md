@@ -163,6 +163,8 @@ pub trait AssetLibrary: Send + Sync {
     /// 素材を取り込む。PNG であることを確かめ、ハッシュ値で保存する。同じ素材を何度取り込んでもよい。
     fn import(&self, bytes: &[u8]) -> Result<AssetInfo, LibraryError>;
     fn list(&self) -> Result<Vec<AssetInfo>, LibraryError>;
+    /// 素材の情報（画素数）。貼るときの大きさの計算に使う。
+    fn info(&self, hash: &AssetHash) -> Result<AssetInfo, LibraryError>;
     fn read(&self, hash: &AssetHash) -> Result<Vec<u8>, LibraryError>;
 }
 

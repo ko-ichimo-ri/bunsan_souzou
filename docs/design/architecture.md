@@ -146,7 +146,7 @@ fn main() -> anyhow::Result<()> {
     let ports = AppPorts {
         repository: Arc::new(JsonWorkRepository::new()),
         files: Arc::new(FsFileAccess::new()),
-        vcs: Arc::new(GitVersionControlFactory::new()),
+        vcs: Arc::new(GitFactory::new()),
         library: Arc::new(FsAssetLibrary::open_default()?),
         exchange: Arc::new(IrohAssetExchange::start()?),
         ids: Arc::new(RandomIdSource),
