@@ -12,7 +12,7 @@
 
 | 文書 | 内容 |
 | --- | --- |
-| [architecture.md](architecture.md) | 全体構成：ポートとアダプター、クレート構成、依存の規則、用語とコード上の名前、スレッド・エラー・テストの方針 |
+| [architecture.md](architecture.md) | 全体構成：ポートとアダプター、クレート構成、依存の規則と呼び出しの流れ、用語とコード上の名前、スレッド・エラー・テストの方針 |
 | [sequences.md](sequences.md) | 主な操作のシーケンス図（S1〜S14） |
 | [modules/domain.md](modules/domain.md) | データと純粋な処理：作品の型、座標の変換、当たり判定、編集操作 |
 | [modules/ports.md](modules/ports.md) | インターフェース：ファイル・保存形式・履歴管理・素材置き場・P2P・ID のトレイト |

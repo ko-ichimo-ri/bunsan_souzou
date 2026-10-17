@@ -12,33 +12,25 @@ v0.1.0 のプログラム全体を、どのような部品に分け、部品ど�
 - アダプターを組み合わせるのは、起動処理（組み立て役）だけです。
 
 ```mermaid
-flowchart LR
-    subgraph 外側["外側（アダプター）"]
-        UI[ui-egui<br/>画面]
-        JSON[store-json<br/>JSON 形式]
-        FS[fs<br/>ファイル・素材置き場]
-        GIT[vcs-git<br/>git コマンド]
-        IROH[exchange-iroh<br/>P2P]
+flowchart TB
+    subgraph L3["組み立て役"]
+        BIN[bunsan-souzou]
+        subgraph L2["画面・アダプター"]
+            UI[ui-egui<br/>画面]
+            JSON[store-json<br/>JSON 形式]
+            FS[fs<br/>ファイル・素材置き場]
+            GIT[vcs-git<br/>git コマンド]
+            IROH[exchange-iroh<br/>P2P]
+            subgraph L1["中心部"]
+                APP[app<br/>ユースケース]
+                PORTS[ports<br/>インターフェース]
+                DOMAIN[domain<br/>データと純粋な処理]
+            end
+        end
     end
-    subgraph 中心["中心部"]
-        APP[app<br/>ユースケース]
-        PORTS[ports<br/>インターフェース]
-        DOMAIN[domain<br/>データと純粋な処理]
-    end
-    UI --> APP
-    APP --> PORTS
-    APP --> DOMAIN
-    PORTS --> DOMAIN
-    JSON -. 実装 .-> PORTS
-    FS -. 実装 .-> PORTS
-    GIT -. 実装 .-> PORTS
-    IROH -. 実装 .-> PORTS
-    BIN[bunsan-souzou<br/>組み立て役] --> UI
-    BIN --> JSON
-    BIN --> FS
-    BIN --> GIT
-    BIN --> IROH
 ```
+
+この図は層だけを表します。部品どうしの関係は [3 節](#3-依存と呼び出し)の図にあります。
 
 この形にすると、次のことができます。
 
@@ -48,7 +40,7 @@ flowchart LR
 
 ## 2. クレート構成
 
-モジュールではなく**クレート**で分けます。クレートは、`Cargo.toml` に書いた依存先しか使えないので、依存の規則（3 節）をコンパイラが守らせてくれます。
+モジュールではなく**クレート**で分けます。クレートは、`Cargo.toml` に書いた依存先しか使えないので、依存の規則（3.1 節）をコンパイラが守らせてくれます。
 
 ```
 Cargo.toml                 … ワークスペースの定義
@@ -79,7 +71,13 @@ crates/
 | testkit | [modules/testkit.md](modules/testkit.md) | （なし） |
 | bunsan-souzou | 本文書の 5 節 | anyhow、uuid（ランダムなコマ ID） |
 
-## 3. 依存の規則
+## 3. 依存と呼び出し
+
+部品どうしの関係には、**依存**（コンパイル時）と**呼び出し**（実行時）の 2 つがあり、アダプターのところで向きが逆になります。
+
+### 3.1 依存の規則
+
+矢印 A → B は「A のコードが B の名前を使う」ことを表します。
 
 ```mermaid
 flowchart TD
@@ -100,18 +98,38 @@ flowchart TD
     TK[testkit] --> PORTS
 ```
 
-| クレート | 依存してよい先 |
-| --- | --- |
-| domain | 外部の純粋なライブラリだけ（ファイル・通信・画面を扱うものは使わない） |
-| ports | domain |
-| app | domain、ports |
-| アダプター（store-json・fs・vcs-git・exchange-iroh） | domain、ports |
-| ui-egui | domain、app |
-| testkit | domain、ports |
-| bunsan-souzou | すべて |
+- domain が使う外部クレートは、ファイル・通信・画面を扱わない純粋なもの（blake3・uuid）に限ります。
+- 過去の状態を表示するときは、vcs-git が過去のファイルを読む手段（`FileSource`）を提供し、app がそれを store-json に渡して組み合わせます（[シーケンス図 S6](sequences.md#s6-過去の状態を見る)）。
 
-- アダプターどうしは依存しません。たとえば vcs-git は store-json を知りません。過去の状態を表示するときは、vcs-git が過去のファイルを読む手段（`FileSource`）を提供し、app がそれを store-json に渡します（[シーケンス図 S6](sequences.md#s6-過去の状態を見る)）。
-- ui-egui は ports もアダプターも知りません。app のユースケースだけを呼びます。
+### 3.2 呼び出しの流れ
+
+矢印 A → B は「実行時に A が B の処理を動かす」ことを表します。保存の例です。
+
+```mermaid
+flowchart LR
+    UI[ui-egui] -->|"session.save()"| APP[app]
+    APP -->|"repository.save()<br/>ports::WorkRepository として呼ぶ"| JSON[store-json<br/>JsonWorkRepository]
+```
+
+3.1 では store-json → ports、3.2 では app → store-json です。app は store-json の処理を動かしますが、store-json の名前は知りません。コードでは次のようになります。
+
+```rust
+// ports：トレイトを定義する
+pub trait WorkRepository {
+    fn save(&self, dst: &dyn FileSink, work: &Work, changes: &Changes) -> Result<(), StoreError>;
+}
+
+// store-json：トレイトを実装する（ports の名前を使う）
+impl ports::WorkRepository for JsonWorkRepository { /* JSON で書く */ }
+
+// app：トレイトとして呼ぶ（store-json の名前は出てこない）
+self.repository.save(&*self.files, &self.work, &self.dirty)?;   // repository: Arc<dyn WorkRepository>
+
+// bunsan-souzou：具体的な実装を作って app に渡す
+let repository: Arc<dyn WorkRepository> = Arc::new(JsonWorkRepository::new());
+```
+
+このように、呼び出しの向きと依存の向きを逆にすることを**依存性逆転の原則**といいます。中心部が JSON・git・Iroh を知らずに済むのは、この逆転によるものです。
 
 ## 4. 用語とコード上の名前
 
