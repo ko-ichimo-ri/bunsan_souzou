@@ -23,6 +23,7 @@
 | `MemoryAssetLibrary` | `AssetLibrary` | `BTreeMap<AssetHash, Vec<u8>>` に保存する。PNG の検査は先頭 8 バイトの署名だけで行う | 画素数を設定できる |
 | `LoopbackExchange` | `AssetExchange` | 公開した素材を同じプロセスの中で受け取れる。素材 ID は `loopback:<hash>` | わざと違うデータを返す・つながらない、を設定できる |
 | `SequentialIdSource` | `IdSource` | `00000000-…-000000000001` から順に ID を返す | ― |
+| `TestKit` | ― | 上の偽物をまとめて作り、それらを使う `Workspace` を返す | 作品フォルダごとの `MemoryFiles` を取り出せる（`files(dir)`） |
 
 `WorkRepository` には偽物を作らず、本物の `store_json::JsonWorkRepository` を `MemoryFiles` と組み合わせて使います。保存形式は速く、決まった結果で動くためです。
 
